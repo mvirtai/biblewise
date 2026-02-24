@@ -108,6 +108,17 @@ docker-compose up --build
 
 The Dockerfile runs `fetch_bible` during build, so the container includes the full Bible database.
 
+### Task (optional)
+
+If you use [Task](https://taskfile.dev), run `task` to see commands:
+
+```bash
+task install    # deps + fetch (first-time)
+task run        # run app
+task test       # pytest
+task docker     # docker-compose up --build
+```
+
 ### Tests
 
 Install dev dependencies and run tests:
