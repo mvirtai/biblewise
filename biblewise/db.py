@@ -1,4 +1,8 @@
-"""SQLite database path, schema, and connection helpers."""
+"""SQLite database path, schema, and connection helpers.
+
+The database file (bible.db) lives next to the project root. Schema: books
+table (position, id, name) and verses table (book_position, chapter, verse, text).
+"""
 
 import sqlite3
 from pathlib import Path
@@ -11,6 +15,7 @@ def get_db_path() -> Path:
 
 
 def get_connection() -> sqlite3.Connection:
+    """Open a connection to bible.db. Raises FileNotFoundError if the file is missing."""
     path = get_db_path()
     if not path.exists():
         raise FileNotFoundError(
@@ -20,6 +25,7 @@ def get_connection() -> sqlite3.Connection:
 
 
 def init_schema(conn: sqlite3.Connection) -> None:
+    """Create books and verses tables and the text search index if they do not exist."""
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS books (
             position INTEGER PRIMARY KEY,
@@ -40,5 +46,6 @@ def init_schema(conn: sqlite3.Connection) -> None:
 
 
 def verse_count(conn: sqlite3.Connection) -> int:
+    """Return the total number of verses in the database."""
     cur = conn.execute("SELECT COUNT(*) FROM verses")
     return cur.fetchone()[0]

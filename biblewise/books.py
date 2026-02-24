@@ -71,7 +71,14 @@ BOOKS = [
 
 
 def book_name_by_position(position: int) -> str | None:
-    """Return full book name for 1-based position (1=Genesis, 66=Revelation)."""
+    """Return full book name for 1-based position (1=Genesis, 66=Revelation).
+
+    Args:
+        position: 1-based book index in canonical KJV order.
+
+    Returns:
+        Full book name, or None if position is out of range.
+    """
     for pos, _id, name in BOOKS:
         if pos == position:
             return name

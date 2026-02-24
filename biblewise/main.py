@@ -1,4 +1,8 @@
-"""Interactive terminal menu for Biblewise. Rich UI, scope, Games submenu."""
+"""Interactive terminal menu for Biblewise.
+
+Orchestrates the main loop: welcome, menu, scope, and dispatch to search/random/games.
+Uses Rich UI and persists scope across menu iterations until quit.
+"""
 
 from biblewise.db import get_connection
 from biblewise.games import run_hangman, run_memory_pairs, run_reference_quiz
@@ -15,6 +19,7 @@ from biblewise.ui import (
     show_welcome,
 )
 
+# Default scope: whole Bible (no filter).
 SCOPE_DEFAULT: tuple[ScopeKind, int | None] = ("all", None)
 
 
@@ -60,6 +65,7 @@ def run(scope: tuple[ScopeKind, int | None]) -> tuple[ScopeKind, int | None] | N
 def do_search(
     conn, scope_kind: ScopeKind, book_position: int | None
 ) -> None:
+    """Handle search flow: prompt, try reference first, then text search within scope."""
     from biblewise.ui import prompt_search
 
     raw = prompt_search()
@@ -78,11 +84,13 @@ def do_search(
 def do_random(
     conn, scope_kind: ScopeKind, book_position: int | None
 ) -> None:
+    """Show one random verse within the current scope."""
     v = random_verse(conn, scope_kind=scope_kind, book_position=book_position)
     show_random_verse(v)
 
 
 def main() -> None:
+    """Entry point: show welcome, then run the main menu loop until user quits."""
     show_welcome()
     scope: tuple[ScopeKind, int | None] = SCOPE_DEFAULT
 

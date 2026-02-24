@@ -1,4 +1,7 @@
-"""Rich-based terminal UI: menus, panels, tables, prompts."""
+"""Rich-based terminal UI: menus, panels, tables, prompts.
+
+All user-facing text and layout live here. Uses a single shared Console instance.
+"""
 
 from rich.console import Console
 from rich.panel import Panel
@@ -11,6 +14,7 @@ console = Console()
 
 
 def show_welcome() -> None:
+    """Print the welcome panel with app title and short description."""
     console.print(
         Panel(
             "[bold]Biblewise[/bold] — Memorize verses and references.\n"
@@ -24,6 +28,7 @@ def show_welcome() -> None:
 def main_menu_choice(
     scope_kind: ScopeKind, book_position: int | None
 ) -> str:
+    """Show main menu and return the user's choice (1–4, q)."""
     scope_str = scope_label(scope_kind, book_position)
     console.print()
     console.print(Panel(
@@ -39,6 +44,7 @@ def main_menu_choice(
 
 
 def games_submenu() -> str:
+    """Show games submenu and return choice (1–3, b)."""
     console.print()
     console.print(Panel(
         "  [bold]1.[/bold] Hangman — guess the word from a verse\n"
@@ -52,7 +58,7 @@ def games_submenu() -> str:
 
 
 def scope_menu() -> tuple[ScopeKind, int | None] | None:
-    """Returns (scope_kind, book_position) or None to cancel."""
+    """Show scope menu; return (scope_kind, book_position) or None to cancel (keep current)."""
     console.print()
     console.print(Panel(
         "  [bold]1.[/bold] All (whole Bible)\n"
@@ -94,6 +100,7 @@ def scope_menu() -> tuple[ScopeKind, int | None] | None:
 
 
 def show_single_verse(verse: dict) -> None:
+    """Print one verse in a panel with reference as title."""
     console.print()
     console.print(
         Panel(
@@ -105,6 +112,7 @@ def show_single_verse(verse: dict) -> None:
 
 
 def show_search_results(results: list[dict], query: str) -> None:
+    """Print search results as a table; show a message if no results."""
     if not results:
         console.print("[yellow]No verses found.[/yellow]")
         return
@@ -119,6 +127,7 @@ def show_search_results(results: list[dict], query: str) -> None:
 
 
 def show_random_verse(verse: dict | None) -> None:
+    """Print a random verse panel, or an error message if verse is None."""
     if not verse:
         console.print("[red]No verses in database (or none in current scope).[/red]")
         return
@@ -126,6 +135,7 @@ def show_random_verse(verse: dict | None) -> None:
 
 
 def prompt_search() -> str:
+    """Ask for a reference or search text; return trimmed input."""
     return Prompt.ask(
         "Reference (e.g. John 3:16) or search text",
         default="",

@@ -1,9 +1,13 @@
-"""Verse scope (filter): All, OT, NT, or a single book."""
+"""Verse scope (filter): All, OT, NT, or a single book.
+
+Used by search, random verse, and all games to limit which verses are considered.
+"""
 
 from typing import Literal
 
 from biblewise.books import BOOKS, book_name_by_position
 
+# KJV book positions: 1–39 Old Testament, 40–66 New Testament.
 OT_LAST = 39
 NT_FIRST = 40
 
@@ -11,7 +15,11 @@ ScopeKind = Literal["all", "ot", "nt", "book"]
 
 
 def scope_where_sql(scope_kind: ScopeKind, book_position: int | None) -> tuple[str, list]:
-    """Return (suffix WHERE clause, params) for verses. Clause includes leading space and AND if needed."""
+    """Return (suffix WHERE clause, params) for filtering verses by scope.
+
+    The clause includes a leading space and AND so it can be appended to existing WHERE.
+    Example: for "ot" returns (" AND v.book_position BETWEEN 1 AND ?", [39]).
+    """
     if scope_kind == "all":
         return "", []
     if scope_kind == "ot":
@@ -24,6 +32,7 @@ def scope_where_sql(scope_kind: ScopeKind, book_position: int | None) -> tuple[s
 
 
 def scope_label(scope_kind: ScopeKind, book_position: int | None) -> str:
+    """Human-readable label for the current scope (e.g. 'Old Testament', 'Genesis')."""
     if scope_kind == "all":
         return "All (whole Bible)"
     if scope_kind == "ot":
@@ -37,5 +46,5 @@ def scope_label(scope_kind: ScopeKind, book_position: int | None) -> str:
 
 
 def book_list_for_picker() -> list[tuple[int, str]]:
-    """(position, display name) for scope picker."""
+    """List of (position, display name) for the scope picker (all 66 books)."""
     return [(pos, name) for pos, _id, name in BOOKS]

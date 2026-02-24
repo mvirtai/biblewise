@@ -13,13 +13,13 @@ def test_scope_where_sql_all():
 
 def test_scope_where_sql_ot():
     clause, params = scope_where_sql("ot", None)
-    assert "BETWEEN" in clause and "1" in clause and "39" in clause
+    assert "BETWEEN" in clause and "1" in clause
     assert params == [39]
 
 
 def test_scope_where_sql_nt():
     clause, params = scope_where_sql("nt", None)
-    assert "BETWEEN" in clause and "40" in clause and "66" in clause
+    assert "BETWEEN" in clause and "66" in clause
     assert params == [40]
 
 

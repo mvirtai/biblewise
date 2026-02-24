@@ -1,4 +1,8 @@
-"""Bible games: hangman, memory pairs, reference quiz. All respect scope."""
+"""Bible games: hangman, memory pairs, reference quiz.
+
+All games use Rich for panels/tables/prompts and respect the current scope
+(All / OT / NT / single book).
+"""
 
 import random
 import sqlite3
@@ -20,7 +24,10 @@ def get_random_verse_for_game(
     scope_kind: ScopeKind = "all",
     book_position: int | None = None,
 ) -> dict | None:
-    """Prefer verses with enough words; respects scope."""
+    """Pick a random verse with at least min_words; respects scope.
+
+    Tries up to 50 times for a sufficiently long verse, then falls back to any verse.
+    """
     for _ in range(50):
         v = random_verse(conn, scope_kind=scope_kind, book_position=book_position)
         if v and len(v["text"].split()) >= min_words:
@@ -33,6 +40,7 @@ def run_hangman(
     scope_kind: ScopeKind = "all",
     book_position: int | None = None,
 ) -> None:
+    """Run one round of hangman: guess a word from a verse within the current scope."""
     verse = get_random_verse_for_game(
         conn, min_words=3, scope_kind=scope_kind, book_position=book_position
     )
@@ -109,6 +117,7 @@ def run_memory_pairs(
 ) -> None:
     """Match verse text to reference; respects scope."""
     where_extra, where_params = scope_where_sql(scope_kind, book_position)
+    # Prefer medium-length verses (40–120 chars) for readable snippets.
     rows = conn.execute(
         f"""
         SELECT v.book_position, v.chapter, v.verse, v.text, b.name
