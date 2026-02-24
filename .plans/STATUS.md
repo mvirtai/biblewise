@@ -85,7 +85,9 @@ The app is **complete and working** for its initial scope:
 ## Ready for
 
 - ✅ Local use (personal Bible study tool)
-- ✅ GitHub (professional-looking repo for portfolio)
+- ✅ GitHub (professional-looking repo for portfolio) — **Live at github.com/mvirtai/biblewise**
+- ✅ Docker (Dockerfile + docker-compose.yml included)
+- ✅ CI/CD (GitHub Actions: test on Python 3.10/3.11/3.12, lint)
 - ✅ Extension (scope/games/translations can be added incrementally)
 - ⚠️ Distribution (needs PyPI setup or binary build)
 - ⚠️ Production (no logging, no config, no error telemetry)

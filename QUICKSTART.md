@@ -4,10 +4,17 @@ Terminal Bible memorization with games, search, and scope filtering.
 
 ## Install and run
 
+**With uv**:
 ```bash
 uv sync
 uv run python -m biblewise.fetch_bible   # One-time: downloads KJV (~10s)
 uv run biblewise
+```
+
+**With Docker**:
+```bash
+docker build -t biblewise .
+docker run -it biblewise
 ```
 
 ## Features

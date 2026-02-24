@@ -91,6 +91,23 @@ python -m biblewise.fetch_bible
 python -m biblewise
 ```
 
+### Docker
+
+Build and run in a container:
+
+```bash
+docker build -t biblewise .
+docker run -it biblewise
+```
+
+Or with docker-compose:
+
+```bash
+docker-compose up --build
+```
+
+The Dockerfile runs `fetch_bible` during build, so the container includes the full Bible database.
+
 ### Tests
 
 Install dev dependencies and run tests:
