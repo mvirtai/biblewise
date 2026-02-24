@@ -24,6 +24,9 @@ This folder contains **internal developer notes** for the Biblewise project. Not
 ### 🎬 DEMO.md
 **Demo walkthrough** (5 min script). Setup, 12-step demo (search, random, scope, games), expected output samples, tips for showing the app, recording instructions.
 
+### 🚀 DEPLOYMENT.md
+**CI/CD and deployment notes**. GitHub Actions (test matrix, lint), Docker (Dockerfile, compose, image size), future options (PyPI, binary, Snap, Homebrew, web version), CI enhancements.
+
 ---
 
 ## How to use these notes
