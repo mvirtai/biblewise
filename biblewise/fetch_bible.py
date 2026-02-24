@@ -1,4 +1,8 @@
-"""Download KJV from bibleapi/bibleapi-bibles-json and import into SQLite."""
+"""Download KJV from bibleapi/bibleapi-bibles-json and import into SQLite.
+
+Run once to populate bible.db. JSON structure: resultset.row[].field with
+[verse_id, book_position, chapter, verse, text].
+"""
 
 import json
 import sqlite3
@@ -8,16 +12,22 @@ from pathlib import Path
 from biblewise.books import BOOKS
 from biblewise.db import get_db_path, init_schema
 
+# Raw JSON URL; no API key required.
 KJV_JSON_URL = "https://raw.githubusercontent.com/bibleapi/bibleapi-bibles-json/master/kjv.json"
 
 
 def download_json() -> dict:
+    """Fetch and parse the KJV JSON from the remote URL."""
     with urllib.request.urlopen(KJV_JSON_URL) as resp:
         return json.load(resp)
 
 
 def import_data(conn: sqlite3.Connection, data: dict) -> int:
-    """Insert books and verses from bibleapi JSON into an already-schema-ready conn. Returns verse count."""
+    """Insert books and verses from bibleapi JSON into an already-schema-ready connection.
+
+    Clears existing books and verses, then inserts from BOOKS and data["resultset"]["row"].
+    Returns the final verse count.
+    """
     conn.execute("DELETE FROM verses")
     conn.execute("DELETE FROM books")
     for pos, id_, name in BOOKS:
@@ -41,6 +51,7 @@ def import_data(conn: sqlite3.Connection, data: dict) -> int:
 
 
 def run() -> None:
+    """Download KJV JSON, create or reset the database, and print the verse count."""
     db_path = get_db_path()
     db_path.parent.mkdir(parents=True, exist_ok=True)
 

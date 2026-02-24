@@ -1,4 +1,8 @@
-"""Search verses by reference or text; get random verse."""
+"""Search verses by reference or text; get random verse.
+
+Reference parsing supports formats like 'John 3:16', '1 John 2:3', 'John 3 16'.
+Text search is LIKE-based (substring). All functions accept scope (OT/NT/book).
+"""
 
 import re
 import sqlite3
@@ -6,11 +10,13 @@ import sqlite3
 from biblewise.books import BOOKS, book_name_by_position
 from biblewise.scope import ScopeKind, scope_where_sql
 
+# Optional digits, then book name (letters), then chapter and verse (with optional colon).
 REF_PATTERN = re.compile(
     r"^\s*(\d?\s*[A-Za-z]+)\s+(\d+)\s*:\s*(\d+)\s*$",
     re.IGNORECASE,
 )
 
+# Map various book name forms (full, short, lowercase) to 1-based position.
 BOOK_NAME_TO_POSITION = {}
 for pos, _id, name in BOOKS:
     BOOK_NAME_TO_POSITION[name.lower()] = pos
@@ -22,7 +28,10 @@ for pos, _id, name in BOOKS:
 
 
 def parse_reference(ref: str) -> tuple[int, int, int] | None:
-    """Parse 'John 3:16' or '1 John 2:3' or 'John 3 16' into (book_position, chapter, verse) or None."""
+    """Parse 'John 3:16' or '1 John 2:3' or 'John 3 16' into (book_position, chapter, verse).
+
+    Tries exact match first, then prefix/suffix match on book name. Returns None if invalid.
+    """
     ref = ref.strip()
     ref = re.sub(r"\s+(\d+)\s+(\d+)\s*$", r" \1:\2", ref)
     m = REF_PATTERN.match(ref)
@@ -44,6 +53,10 @@ def parse_reference(ref: str) -> tuple[int, int, int] | None:
 
 
 def get_verse(conn: sqlite3.Connection, book_position: int, chapter: int, verse: int) -> dict | None:
+    """Fetch a single verse by book position, chapter, and verse number.
+
+    Returns a dict with book_position, chapter, verse, text, book_name, reference; or None.
+    """
     row = conn.execute(
         """
         SELECT v.book_position, v.chapter, v.verse, v.text, b.name
@@ -66,6 +79,7 @@ def get_verse(conn: sqlite3.Connection, book_position: int, chapter: int, verse:
 
 
 def search_by_reference(conn: sqlite3.Connection, ref: str) -> dict | None:
+    """Parse ref and return the matching verse dict, or None if not found or invalid."""
     parsed = parse_reference(ref)
     if not parsed:
         return None
@@ -79,6 +93,7 @@ def search_by_text(
     scope_kind: ScopeKind = "all",
     book_position: int | None = None,
 ) -> list[dict]:
+    """Search verse text with LIKE %query%. Respects scope. Returns list of verse dicts."""
     q = f"%{query.strip()}%"
     where_extra, where_params = scope_where_sql(scope_kind, book_position)
     rows = conn.execute(
@@ -110,6 +125,7 @@ def random_verse(
     scope_kind: ScopeKind = "all",
     book_position: int | None = None,
 ) -> dict | None:
+    """Return a random verse within the given scope, or None if no verses match."""
     where_extra, where_params = scope_where_sql(scope_kind, book_position)
     row = conn.execute(
         f"""
