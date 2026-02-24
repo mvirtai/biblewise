@@ -1,0 +1,58 @@
+# https://taskfile.dev
+version: "3"
+
+vars:
+  UV: uv
+  PY: "{{.UV}} run"
+
+tasks:
+  default:
+    desc: Run the app (ensure deps and DB exist first)
+    cmds:
+      - task: run
+
+  deps:
+    desc: Install dependencies with uv
+    cmds:
+      - "{{.UV}} sync"
+
+  deps-dev:
+    desc: Install dependencies including dev (pytest)
+    cmds:
+      - "{{.UV}} sync --extra dev"
+
+  fetch:
+    desc: Download KJV into bible.db (one-time or refresh)
+    cmds:
+      - "{{.PY}} python -m biblewise.fetch_bible"
+
+  run:
+    desc: Run Biblewise interactive menu
+    cmds:
+      - "{{.PY}} biblewise"
+
+  test:
+    desc: Run tests
+    cmds:
+      - "{{.PY}} pytest tests/ -v --tb=short"
+
+  install:
+    desc: Full first-time setup (deps + fetch)
+    cmds:
+      - task: deps
+      - task: fetch
+
+  docker-build:
+    desc: Build Docker image
+    cmds:
+      - docker build -t biblewise .
+
+  docker-run:
+    desc: Run Biblewise in a container
+    cmds:
+      - docker run -it biblewise
+
+  docker:
+    desc: Build and run with docker-compose
+    cmds:
+      - docker-compose up --build
