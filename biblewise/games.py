@@ -12,10 +12,15 @@ from rich.panel import Panel
 from rich.prompt import Prompt
 from rich.table import Table
 
-from biblewise.scope import ScopeKind, scope_where_sql
+from biblewise.scope import ScopeKind, scope_label, scope_where_sql
 from biblewise.search import random_verse
 
 _console = Console()
+
+
+def _scope_subtitle(scope_kind: ScopeKind, book_position: int | None) -> str:
+    """Return a short scope label for game panel titles (e.g. 'scope: Psalms')."""
+    return f"scope: {scope_label(scope_kind, book_position)}"
 
 
 def get_random_verse_for_game(
@@ -59,13 +64,14 @@ def run_hangman(
     wrong = []
     max_wrong = 6
 
+    scope_sub = _scope_subtitle(scope_kind, book_position)
     _console.print()
     _console.print(
         Panel(
             f"[bold]Reference:[/bold] {reference}\n\n"
             "Guess the missing word from this verse.\n"
-            "Type a [bold]letter[/bold] or the [bold]full word[/bold].",
-            title="[bold cyan]Hangman[/bold cyan]",
+            "Type a [bold]letter[/bold], the [bold]full word[/bold], or [bold]peek[/bold] to see the verse (costs 1 wrong guess).",
+            title=f"[bold cyan]Hangman[/bold cyan] — {scope_sub}",
             border_style="cyan",
         )
     )
@@ -78,6 +84,11 @@ def run_hangman(
             _console.print()
             break
         if not raw:
+            continue
+        if raw == "PEEK":
+            wrong.append("(peek)")
+            _console.print(f"[dim]Verse: {text}[/dim]")
+            _console.print(f"[red]Peek used.[/red] Mistakes ({len(wrong)}/{max_wrong}): {', '.join(str(x) for x in wrong)}")
             continue
         if len(raw) > 1:
             if raw == target_word.upper():
@@ -115,8 +126,15 @@ def run_memory_pairs(
     scope_kind: ScopeKind = "all",
     book_position: int | None = None,
 ) -> None:
-    """Match verse text to reference; respects scope."""
+    """Match verse text to reference; respects scope. Prompts for pair count 2–4."""
     where_extra, where_params = scope_where_sql(scope_kind, book_position)
+    try:
+        raw_pairs = Prompt.ask("How many pairs? (2–4)", default="4").strip()
+        n = int(raw_pairs)
+        if 2 <= n <= 4:
+            pairs = n
+    except (ValueError, EOFError, KeyboardInterrupt):
+        pairs = 4
     # Prefer medium-length verses (40–120 chars) for readable snippets.
     rows = conn.execute(
         f"""
@@ -154,12 +172,13 @@ def run_memory_pairs(
     for i, idx in enumerate(text_indices, 1):
         text_table.add_row(str(i), cards[idx][1])
 
+    scope_sub = _scope_subtitle(scope_kind, book_position)
     _console.print()
     _console.print(
         Panel(
             "Match each [cyan]Ref #[/cyan] to the correct [yellow]Text #[/yellow].\n"
             "Enter your guess as two numbers, e.g. [bold]1 3[/bold].",
-            title="[bold cyan]Memory pairs[/bold cyan]",
+            title=f"[bold cyan]Memory pairs[/bold cyan] — {scope_sub}",
             border_style="cyan",
         )
     )
@@ -232,11 +251,12 @@ def run_reference_quiz(
 
     snippet = verse["text"][:200] + ("…" if len(verse["text"]) > 200 else "")
 
+    scope_sub = _scope_subtitle(scope_kind, book_position)
     _console.print()
     _console.print(
         Panel(
             f'[italic]"{snippet}"[/italic]',
-            title="[bold cyan]Reference quiz[/bold cyan] — Which reference is this verse from?",
+            title=f"[bold cyan]Reference quiz[/bold cyan] — {scope_sub} — Which reference?",
             border_style="cyan",
         )
     )

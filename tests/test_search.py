@@ -76,6 +76,11 @@ class TestSearchByText:
         results = search_by_text(conn, "xyznonexistent123", limit=5)
         assert results == []
 
+    def test_case_insensitive(self, conn):
+        results = search_by_text(conn, "BEGINNING", limit=5)
+        assert len(results) >= 1
+        assert any("beginning" in r["text"].lower() for r in results)
+
 
 class TestRandomVerse:
     def test_returns_verse(self, conn):

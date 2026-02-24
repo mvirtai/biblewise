@@ -135,8 +135,8 @@ def show_random_verse(verse: dict | None) -> None:
 
 
 def prompt_search() -> str:
-    """Ask for a reference or search text; return trimmed input."""
+    """Ask for a reference or search text; return trimmed input. Empty = cancel."""
     return Prompt.ask(
-        "Reference (e.g. John 3:16) or search text",
+        "Reference (e.g. John 3:16) or search text (Enter to cancel)",
         default="",
     ).strip()
