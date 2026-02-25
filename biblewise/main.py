@@ -18,6 +18,7 @@ from biblewise.ui import (
     show_single_verse,
     show_welcome,
 )
+from rich.prompt import Prompt
 
 # Default scope: whole Bible (no filter).
 SCOPE_DEFAULT: tuple[ScopeKind, int | None] = ("all", None)
@@ -29,7 +30,10 @@ def run(scope: tuple[ScopeKind, int | None]) -> tuple[ScopeKind, int | None] | N
     choice = main_menu_choice(scope_kind, book_position)
 
     if choice in ("q", "quit"):
-        return None
+        confirm = Prompt.ask("Are you sure? (y/n)", default="n").strip().lower()
+        if confirm in ("y", "yes"):
+            return None
+        return scope
 
     try:
         conn = get_connection()

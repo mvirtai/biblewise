@@ -19,8 +19,9 @@ This folder is for **you (the developer)** only. It is not part of the user-faci
 - **Scope**: Limit to one book or testament so drills are focused.
 - **Games submenu**: Main menu cleaner; games grouped.
 - **Rich UI**: Panels, tables, green/red/yellow feedback.
-- **Search**: "Book c v" without colon accepted.
+- **Search**: "Book c v" without colon accepted; case-insensitive text search (COLLATE NOCASE).
 - **Empty scope**: Clear message when no verses in scope.
+- **UX (2026-02)**: Scope in game titles; Hangman verse with blank from start; peek (verse shown, word still blanked); Memory pairs prompt 2–4; quit confirmation; search "(Enter to cancel)". See IMPROVEMENTS.md UX section (all 7 items done).
 
 ---
 

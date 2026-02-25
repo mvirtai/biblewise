@@ -13,7 +13,7 @@ This folder contains **internal developer notes** for the Biblewise project. Not
 **Project status snapshot** (2026-02-25). What works, known limitations, next steps (quick wins → larger features), file count, dependencies, readiness checklist.
 
 ### 💡 IMPROVEMENTS.md
-**23 improvement ideas** from maalaisjärki review. Grouped by: UX/usability (7), architecture/code (5), testing (3), features (8). Includes performance notes and deployment ideas.
+**23 improvement ideas** from maalaisjärki review. UX/usability (7) — all implemented 2026-02. Rest: architecture/code (5), testing (3), features (8). Includes performance notes and deployment ideas.
 
 ### 🔧 REFACTORING.md
 **10 refactoring opportunities**. Technical improvements that don't add features but make code cleaner: Scope dataclass, shared console, DB context manager, game logic extraction, Verse dataclass, config file, logging, async, separate game modules. Priority ranking included.

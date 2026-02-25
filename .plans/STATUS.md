@@ -5,17 +5,19 @@
 
 ---
 
-## Current state: ✅ Functional MVP
+## Current state: ✅ Functional MVP + UX improvements
 
 The app is **complete and working** for its initial scope:
 - ✅ Data pipeline (fetch KJV → SQLite)
-- ✅ Search (reference + text, with scope)
+- ✅ Search (reference + text, with scope; **case-insensitive** text search)
 - ✅ Random verse (with scope)
 - ✅ Three games (Hangman, Memory pairs, Reference quiz)
 - ✅ Scope filter (All / OT / NT / Single book)
 - ✅ Rich terminal UI (panels, tables, colors)
-- ✅ Tests (31+ passing, in-memory fixture)
-- ✅ Documentation (README, .plans/)
+- ✅ **UX**: Scope in game titles; Hangman shows verse with blank from start; peek (no answer); Memory pairs prompt 2–4; quit confirmation; search "Enter to cancel"
+- ✅ Tests (37 passing, in-memory fixture; includes test_case_insensitive)
+- ✅ Documentation (README, .plans/); Taskfile for run/test/docker
+- ✅ .plans/ = public (EN); .conversations/ = private (FI), in .gitignore
 
 ---
 
@@ -34,7 +36,7 @@ The app is **complete and working** for its initial scope:
 - **No persistence**: No scores, no progress tracking, no favorites.
 - **Single translation**: KJV only (ASV/WEB available in same repo but not wired).
 - **No CLI args**: Must use interactive menu (Click reserved for future).
-- **Reference quiz distractors**: Random; could be more plausible (e.g. same testament).
+- **Reference quiz distractors**: Wrong options are from same scope (OT/NT/book) via random_verse; could add "nearby chapter" for more plausibility.
 - **Abbreviations**: "Jn" for John not supported; only full names and some heuristics.
 
 ---
@@ -43,11 +45,11 @@ The app is **complete and working** for its initial scope:
 
 ### Quick wins (1–2 hours)
 1. Shared console (games imports from ui) — cleanup
-2. Case-insensitive text search (`COLLATE NOCASE`) — UX improvement
-3. Scope in game panel titles (e.g. "Hangman (scope: Psalms)") — visibility
+2. ~~Case-insensitive text search~~ ✅ Done
+3. ~~Scope in game panel titles~~ ✅ Done
+4. Explicit abbreviation map (Jn, Gen, Ps) — better reference parsing
 
 ### Medium features (3–5 hours)
-4. Explicit abbreviation map (Jn, Gen, Ps, etc.) — better UX
 5. Scope dataclass (replace tuple) — cleaner code
 6. More games (fill-in-the-blank, order-the-verse) — variety
 
@@ -69,8 +71,8 @@ The app is **complete and working** for its initial scope:
 
 - **Python files**: 16 (8 in biblewise/, 7 in tests/, 1 root)
 - **Lines of code**: ~800 (excluding tests and data)
-- **Tests**: 31+ (books, db, search, scope, fetch, games)
-- **Documentation**: README.md + 4 files in .plans/
+- **Tests**: 37 (books, db, search, scope, fetch, games; search includes test_case_insensitive)
+- **Documentation**: README.md, QUICKSTART.md, Taskfile; .plans/ (9 files, public EN); .conversations/ (private FI, gitignored)
 
 ---
 

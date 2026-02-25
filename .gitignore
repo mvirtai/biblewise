@@ -50,5 +50,5 @@ Thumbs.db
 # uv
 uv.lock
 
-# Developer notes (optional: remove this line to track .plans/ in git)
-# .plans/
+# Keskustelut ja suunnittelu suomeksi (yksityinen, ei commitoida)
+.conversations/

@@ -93,7 +93,7 @@ def search_by_text(
     scope_kind: ScopeKind = "all",
     book_position: int | None = None,
 ) -> list[dict]:
-    """Search verse text with LIKE %query%. Respects scope. Returns list of verse dicts."""
+    """Search verse text with case-insensitive LIKE %query%. Respects scope. Returns list of verse dicts."""
     q = f"%{query.strip()}%"
     where_extra, where_params = scope_where_sql(scope_kind, book_position)
     rows = conn.execute(
@@ -101,7 +101,7 @@ def search_by_text(
         SELECT v.book_position, v.chapter, v.verse, v.text, b.name
         FROM verses v
         JOIN books b ON b.position = v.book_position
-        WHERE v.text LIKE ?{where_extra}
+        WHERE v.text LIKE ? COLLATE NOCASE{where_extra}
         ORDER BY v.book_position, v.chapter, v.verse
         LIMIT ?
         """,
