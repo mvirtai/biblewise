@@ -64,13 +64,20 @@ def run_hangman(
     wrong = []
     max_wrong = 6
 
+    # Show verse from the start with target word blanked so context is visible.
+    idx = text.find(target_word)
+    if idx >= 0:
+        verse_with_blank = text[:idx] + "_" * len(target_word) + text[idx + len(target_word) :]
+    else:
+        verse_with_blank = text
+
     scope_sub = _scope_subtitle(scope_kind, book_position)
     _console.print()
     _console.print(
         Panel(
             f"[bold]Reference:[/bold] {reference}\n\n"
-            "Guess the missing word from this verse.\n"
-            "Type a [bold]letter[/bold], the [bold]full word[/bold], or [bold]peek[/bold] to see the verse (costs 1 wrong guess).",
+            f"[italic]{verse_with_blank}[/italic]\n\n"
+            "Guess the missing word. Type a [bold]letter[/bold], the [bold]full word[/bold], or [bold]peek[/bold] (costs 1 wrong guess).",
             title=f"[bold cyan]Hangman[/bold cyan] — {scope_sub}",
             border_style="cyan",
         )
@@ -87,7 +94,9 @@ def run_hangman(
             continue
         if raw == "PEEK":
             wrong.append("(peek)")
-            _console.print(f"[dim]Verse: {text}[/dim]")
+            # Show verse with word still blanked (no free answer).
+            peek_verse = text[:idx] + masked + text[idx + len(target_word) :] if idx >= 0 else text
+            _console.print(f"[dim]Verse: {peek_verse}[/dim]")
             _console.print(f"[red]Peek used.[/red] Mistakes ({len(wrong)}/{max_wrong}): {', '.join(str(x) for x in wrong)}")
             continue
         if len(raw) > 1:
@@ -106,7 +115,7 @@ def run_hangman(
             masked = "".join(
                 c if c in " -'" or c.upper() in guessed else "_" for c in target_word
             )
-            _console.print(f"[green]Good:[/green] {masked}")
+            _console.print(f"[green]Good:[/green] [bold]{masked}[/bold]")
         else:
             wrong.append(letter)
             _console.print(
