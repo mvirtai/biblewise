@@ -4,6 +4,11 @@ version: "3"
 vars:
   UV: uv
   PY: "{{.UV}} run"
+  DOCKER_IMAGE: biblewise
+  DOCKER_TAG: latest
+  DOCKER_USER: '{{.DOCKER_USER | default ""}}'
+  DOCKER_REGISTRY: '{{.DOCKER_REGISTRY | default "docker.io"}}'
+  DOCKER_FULL: "{{.DOCKER_REGISTRY}}/{{.DOCKER_USER}}/{{.DOCKER_IMAGE}}:{{.DOCKER_TAG}}"
 
 tasks:
   default:
@@ -42,17 +47,28 @@ tasks:
       - task: deps
       - task: fetch
 
-  docker-build:
+  dbuild:
     desc: Build Docker image
     cmds:
-      - docker build -t biblewise .
+      - docker build -t {{.DOCKER_IMAGE}}:{{.DOCKER_TAG}} .
 
-  docker-run:
+  drun:
     desc: Run Biblewise in a container
     cmds:
-      - docker run -it biblewise
+      - docker run -it {{.DOCKER_IMAGE}}:{{.DOCKER_TAG}}
 
-  docker:
+  dpush:
+    desc: Tag and push image to registry (set DOCKER_USER env var)
+    deps: [dbuild]
+    preconditions:
+      - sh: test -n "{{.DOCKER_USER}}"
+        msg: "DOCKER_USER is required. Run: DOCKER_USER=yourname task dpush"
+    cmds:
+      - docker tag {{.DOCKER_IMAGE}}:{{.DOCKER_TAG}} {{.DOCKER_FULL}}
+      - docker push {{.DOCKER_FULL}}
+      - echo "Pushed {{.DOCKER_FULL}}"
+
+  dup:
     desc: Build and run with docker-compose
     cmds:
       - docker-compose up --build
